@@ -52,18 +52,32 @@ function App() {
 
   // Simulation de connexion wallet
   const connectWallet = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-        setAccount(accounts[0])
-        setIsConnected(true)
-      } catch (error) {
-        console.error('Erreur de connexion:', error)
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      const accounts = await window.ethereum.request({ 
+        method: 'eth_requestAccounts' 
+      });
+      
+      if (accounts.length > 0) {
+        const account = accounts[0];
+        setAccount(account);
+        setIsConnected(true);
+        console.log('Wallet connecté:', account);
       }
-    } else {
-      alert('MetaMask n\'est pas installé. Veuillez l\'installer pour continuer.')
+    } catch (error) {
+      console.error('Erreur de connexion:', error);
+      if (error.code === 4001) {
+        alert('Connexion refusée par l\'utilisateur');
+      } else {
+        alert('Erreur lors de la connexion au wallet');
+      }
     }
+  } else {
+    alert('MetaMask n\'est pas installé. Veuillez l\'installer pour continuer.');
+    window.open('https://metamask.io/download/', '_blank' );
   }
+}
+
 
   const mintNFT = async () => {
     if (!isConnected) {
